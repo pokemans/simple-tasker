@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+<title>🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫</title>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<style type="text/css">
+html { 
+  background: url(9688606339_bf7b48ec1e_o_d.jpg) no-repeat center center fixed; 
+  background-size: cover;
+}
+#time_area {
+  color: black;
+  opacity: .5;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 24em;
+  margin-top: -120px;
+}
+#pageid_area {
+  color: black;
+  opacity: .65;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2em;
+  margin-left: 20px;
+  margin-top: -110px;
+}
+#task_area {
+  color: black;
+  opacity: .8;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2em;
+  width: 55%;
+  margin-left: 25px;
+}
+.task_textinput {
+  outline: none;
+  background: rgba(255,255,255,.4);
+  border: none;
+  font-size: 1em;
+  width: 100%;
+}
+.task_checkbox {
+  width: 20px;
+  transform: scale(2);
+}
+.checkbox_td {
+  width: 40px;
+}
+.task_input {
+  border-bottom: 1px solid black;
+}
+</style>
+<script type="text/javascript">
+function setTime(){
+	var d = new Date();
+	document.getElementById('time_area').innerHTML = d.toTimeString().match(/^\d+:\d+:\d+/)[0];
+	setTimeout(setTime, 1000);
+}
+function addTaskRow(should_check, task_text){
+	var mtr = document.createElement('tr');
+	mtr.className = "task_input";
+	var cboxtd = document.createElement('td');
+	cboxtd.className = 'checkbox_td';
+	mtr.appendChild(cboxtd);
+	var cbox = document.createElement('input');
+	cbox.type = 'checkbox';
+	cbox.checked = should_check;
+	cbox.className = 'task_checkbox';
+	cbox.onclick = 'saveTasks()';
+	cboxtd.appendChild(cbox);
+	var dtd = document.createElement('td');
+	mtr.appendChild(dtd);
+	var desc = document.createElement('input');
+	desc.className = "task_textinput";
+	if(task_text)
+		desc.value = task_text;
+	dtd.appendChild(desc);
+	document.getElementById('task_area').appendChild(mtr);
+	document.getElementById('task_area').addEventListener('input', saveTasks);
+	document.getElementById('task_area').addEventListener('click', saveTasks);
+}
+function init(){
+	setTime();
+	var page = window.location.hostname.replace(/\.\w+\.\w+$/, '');
+	document.getElementById('pageid_area').innerHTML = page;
+	var config = {};
+	try{
+		config = JSON.parse(localStorage['task-config']);
+	} catch (e) {
+		console.log('no config');
+	}
+	for(var i in config){
+		addTaskRow(config[i].done, config[i].task);
+	}
+	addTaskRow();
+}
+function saveTasks(){
+	var ins = document.getElementsByClassName('task_input');
+	var desc, is_checked;
+	var index = 0;
+	var cfg = {};
+	for(var i = 0; i < ins.length; i++){
+		desc = ins[i].getElementsByClassName('task_textinput')[0].value;
+		is_checked = ins[i].getElementsByClassName('task_checkbox')[0].checked;
+		if(desc != ''){
+			cfg[index] = {};
+			cfg[index]["task"] = desc;
+			cfg[index]["done"] = is_checked;
+			index++;
+			if(index === ins.length)
+				addTaskRow();
+		}
+	}
+	localStorage['task-config'] = JSON.stringify(cfg);
+}
+document.addEventListener("DOMContentLoaded", init, false);
+</script>
+</head>
+<body>
+<div id="time_area">00:00:00</div>
+<div id="pageid_area"></div>
+<table id="task_area"></table>
+</body>
+</html>
